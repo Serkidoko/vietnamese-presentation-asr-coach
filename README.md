@@ -22,12 +22,20 @@ He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu do
 ## Cai dat
 
 ```powershell
-python -m venv .venv
+py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 ```
 
-Neu PyTorch khong nhan GPU, cai lai PyTorch theo cau hinh CUDA tu trang chinh thuc cua PyTorch, sau do chay lai app.
+Lenh tren cai PyTorch CUDA wheel rieng cho NVIDIA GPU. Khong can cai CUDA Toolkit he thong de chay demo nay, mien la `nvidia-smi` nhan GPU va driver du moi.
+
+Kiem tra GPU:
+
+```powershell
+python -c "import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
+```
 
 Tren mot so moi truong Windows co the gap loi OpenMP trung `libiomp5md.dll` khi import PyTorch/Transformers. App dat `KMP_DUPLICATE_LIB_OK=TRUE` trong process de phuc vu demo local; neu lam ban nop chinh thuc, nen cai PyTorch/NumPy/Librosa trong mot virtual environment moi.
 
