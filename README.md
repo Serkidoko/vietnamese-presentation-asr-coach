@@ -22,14 +22,14 @@ He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu do
 ## Cai dat
 
 ```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
+conda create -y -n asr_coach python=3.11 pip
+conda activate asr_coach
 python -m pip install --upgrade pip
 python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 ```
 
-Lenh tren cai PyTorch CUDA wheel rieng cho NVIDIA GPU. Khong can cai CUDA Toolkit he thong de chay demo nay, mien la `nvidia-smi` nhan GPU va driver du moi.
+Lenh tren tao conda env `asr_coach` va cai PyTorch CUDA wheel rieng cho NVIDIA GPU. Khong can cai CUDA Toolkit he thong de chay demo nay, mien la `nvidia-smi` nhan GPU va driver du moi.
 
 Kiem tra GPU:
 
