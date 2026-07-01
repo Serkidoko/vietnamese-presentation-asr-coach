@@ -29,6 +29,8 @@ pip install -r requirements.txt
 
 Neu PyTorch khong nhan GPU, cai lai PyTorch theo cau hinh CUDA tu trang chinh thuc cua PyTorch, sau do chay lai app.
 
+Tren mot so moi truong Windows co the gap loi OpenMP trung `libiomp5md.dll` khi import PyTorch/Transformers. App dat `KMP_DUPLICATE_LIB_OK=TRUE` trong process de phuc vu demo local; neu lam ban nop chinh thuc, nen cai PyTorch/NumPy/Librosa trong mot virtual environment moi.
+
 ## Chay app
 
 ```powershell
@@ -57,4 +59,3 @@ tests/
   test_analysis.py
   test_evaluation.py
 ```
-

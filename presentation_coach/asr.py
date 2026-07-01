@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from functools import lru_cache
+import os
 from pathlib import Path
+
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 import torch
 from transformers import pipeline
@@ -40,4 +43,3 @@ def transcribe_audio(audio_path: str | Path, model_id: str = DEFAULT_MODEL_ID) -
     if isinstance(result, dict):
         return result.get("text", "").strip()
     return str(result).strip()
-
