@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, get_peft_model
 from transformers import (
     AutoProcessor,
     Seq2SeqTrainer,
@@ -224,7 +224,6 @@ def main() -> None:
         target_modules=["q_proj", "v_proj"],
         lora_dropout=args.lora_dropout,
         bias="none",
-        task_type=TaskType.SEQ_2_SEQ_LM,
     )
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
