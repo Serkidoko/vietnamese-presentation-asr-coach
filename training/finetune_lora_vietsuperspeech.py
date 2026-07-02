@@ -171,6 +171,35 @@ def build_training_arguments(args: argparse.Namespace) -> Seq2SeqTrainingArgumen
     return Seq2SeqTrainingArguments(**kwargs)
 
 
+def build_trainer(
+    args: argparse.Namespace,
+    model,
+    train_dataset,
+    eval_dataset,
+    processor: Any,
+    compute_metrics,
+) -> Seq2SeqTrainer:
+    kwargs = {
+        "args": build_training_arguments(args),
+        "model": model,
+        "train_dataset": train_dataset,
+        "eval_dataset": eval_dataset,
+        "data_collator": DataCollatorSpeechSeq2SeqWithPadding(
+            processor=processor,
+            decoder_start_token_id=model.config.decoder_start_token_id,
+        ),
+        "compute_metrics": compute_metrics,
+    }
+
+    signature = inspect.signature(Seq2SeqTrainer.__init__)
+    if "processing_class" in signature.parameters:
+        kwargs["processing_class"] = processor
+    elif "tokenizer" in signature.parameters:
+        kwargs["tokenizer"] = processor.feature_extractor
+
+    return Seq2SeqTrainer(**kwargs)
+
+
 def main() -> None:
     args = parse_args()
     torch.manual_seed(args.seed)
@@ -232,17 +261,13 @@ def main() -> None:
         )
         return {"wer": wer_metric.compute(predictions=pred_str, references=label_str)}
 
-    trainer = Seq2SeqTrainer(
-        args=build_training_arguments(args),
+    trainer = build_trainer(
+        args=args,
         model=model,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        data_collator=DataCollatorSpeechSeq2SeqWithPadding(
-            processor=processor,
-            decoder_start_token_id=model.config.decoder_start_token_id,
-        ),
+        processor=processor,
         compute_metrics=compute_metrics,
-        tokenizer=processor.feature_extractor,
     )
 
     trainer.train()
@@ -258,4 +283,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
