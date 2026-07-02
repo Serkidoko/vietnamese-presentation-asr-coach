@@ -4,7 +4,7 @@ He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu do
 
 ## Scope
 
-- Upload audio bai thuyet trinh.
+- Record truc tiep hoac upload audio bai thuyet trinh.
 - Chuyen speech to text bang PhoWhisper-base.
 - Hien thi transcript.
 - Tinh thoi luong, so tu, WPM va filler words tieng Viet.
@@ -73,6 +73,11 @@ streamlit run app.py
 ```
 
 Lan dau chay, model `vinai/PhoWhisper-base` se duoc tai ve tu Hugging Face va cache tren may.
+
+App ho tro 2 nguon audio:
+
+- `Record truc tiep`: ghi am tu microphone trong trinh duyet va phan tich ngay.
+- `Upload file`: tai len file `.wav`, `.mp3`, `.m4a`, `.flac` hoac `.ogg`.
 
 ## Chay test nhanh
 
