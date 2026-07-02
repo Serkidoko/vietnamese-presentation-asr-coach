@@ -85,6 +85,22 @@ App ho tro 2 nguon audio:
 python -m unittest discover
 ```
 
+## Fine-tune Nhe Tren Colab
+
+Repo co notebook fine-tune LoRA cuc nhe tren VietSuperSpeech:
+
+```text
+notebooks/finetune_phowhisper_lora_vietsuperspeech.ipynb
+```
+
+Huong dan chi tiet nam trong:
+
+```text
+training/README.md
+```
+
+Mac dinh notebook fine-tune `vinai/PhoWhisper-base` voi 300 train samples, 60 eval samples va 100 steps de phu hop demo mon hoc.
+
 ## Cau truc
 
 ```text
@@ -95,7 +111,11 @@ presentation_coach/
   analysis.py
   evaluation.py
   report.py
+training/
+  finetune_lora_vietsuperspeech.py
+  colab_requirements.txt
 tests/
   test_analysis.py
   test_evaluation.py
+  test_report.py
 ```

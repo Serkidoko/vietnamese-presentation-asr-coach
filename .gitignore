@@ -10,4 +10,7 @@ __pycache__/
 *.ogg
 models/
 cache/
+training_outputs/
+runs/
+wandb/
 
