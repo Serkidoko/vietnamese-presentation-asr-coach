@@ -35,6 +35,20 @@ Runtime -> Change runtime type -> T4 GPU
 
 Neu GitHub repo dang de private, cell clone repo trong notebook can `GITHUB_TOKEN` read-only. Cach don gian hon la doi repo sang public trong luc demo Colab.
 
+Neu gap loi:
+
+```text
+ImportError: Found an incompatible version of torchao
+```
+
+Hay chay:
+
+```bash
+pip uninstall -y torchao
+```
+
+Sau do chay lai cell fine-tune. Notebook da co san buoc nay trong cell cai dependencies.
+
 Lenh train mac dinh trong notebook:
 
 ```bash
