@@ -154,7 +154,6 @@ def build_training_arguments(args: argparse.Namespace) -> Seq2SeqTrainingArgumen
         "predict_with_generate": True,
         "generation_max_length": 225,
         "logging_steps": 10,
-        "eval_steps": max(20, args.max_steps // 2),
         "save_steps": args.max_steps,
         "save_total_limit": 1,
         "report_to": ["tensorboard"],
@@ -164,9 +163,9 @@ def build_training_arguments(args: argparse.Namespace) -> Seq2SeqTrainingArgumen
 
     signature = inspect.signature(Seq2SeqTrainingArguments.__init__)
     if "eval_strategy" in signature.parameters:
-        kwargs["eval_strategy"] = "steps"
+        kwargs["eval_strategy"] = "no"
     else:
-        kwargs["evaluation_strategy"] = "steps"
+        kwargs["evaluation_strategy"] = "no"
 
     return Seq2SeqTrainingArguments(**kwargs)
 
@@ -209,13 +208,16 @@ def main() -> None:
         language="vi",
         task="transcribe",
     )
-    model = WhisperForConditionalGeneration.from_pretrained(
-        args.model_id,
-        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+    model = WhisperForConditionalGeneration.from_pretrained(args.model_id)
+    model.config.forced_decoder_ids = processor.get_decoder_prompt_ids(
+        language="vi",
+        task="transcribe",
     )
-    model.config.forced_decoder_ids = None
     model.config.suppress_tokens = []
     model.config.use_cache = False
+    model.generation_config.language = "vi"
+    model.generation_config.task = "transcribe"
+    model.generation_config.forced_decoder_ids = model.config.forced_decoder_ids
     model.gradient_checkpointing_enable()
 
     lora_config = LoraConfig(
