@@ -6,15 +6,32 @@ from pathlib import Path
 
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
-import torch
-from transformers import pipeline
-
 
 DEFAULT_MODEL_ID = "vinai/PhoWhisper-base"
 
 
+LZMA_IMPORT_HINT = (
+    "Python environment is missing the LZMA runtime used by Hugging Face "
+    "Transformers. On Windows, recreate the conda env with `conda create -n "
+    "asr_coach python=3.11 pip`, or run `conda install -n asr_coach -c "
+    "conda-forge liblzma`, then reinstall requirements."
+)
+
+
+def _is_lzma_import_error(exc: ImportError) -> bool:
+    return exc.name in {"_lzma", "lzma"} or "_lzma" in str(exc)
+
+
 @lru_cache(maxsize=1)
 def load_asr_pipeline(model_id: str = DEFAULT_MODEL_ID):
+    try:
+        import torch
+        from transformers import pipeline
+    except ImportError as exc:
+        if _is_lzma_import_error(exc):
+            raise RuntimeError(LZMA_IMPORT_HINT) from exc
+        raise
+
     device = 0 if torch.cuda.is_available() else -1
     kwargs = {
         "model": model_id,

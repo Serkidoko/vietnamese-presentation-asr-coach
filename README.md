@@ -24,6 +24,7 @@ He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu do
 ```powershell
 conda create -y -n asr_coach python=3.11 pip
 conda activate asr_coach
+conda install -y -c conda-forge liblzma
 python -m pip install --upgrade pip
 python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
@@ -35,6 +36,32 @@ Kiem tra GPU:
 
 ```powershell
 python -c "import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
+```
+
+Kiem tra Python co du runtime nen `lzma` cho Transformers:
+
+```powershell
+python -c "import lzma; print('lzma ok')"
+```
+
+Neu gap loi `ImportError: DLL load failed while importing _lzma`, moi truong Python dang thieu `xz/liblzma`. Cach sach nhat la tao lai env bang conda:
+
+```powershell
+conda deactivate
+conda env remove -n asr_coach
+conda create -y -n asr_coach python=3.11 pip
+conda activate asr_coach
+conda install -y -c conda-forge liblzma
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+pip install -r requirements.txt
+```
+
+Neu muon sua env hien tai truoc khi cai lai dependencies:
+
+```powershell
+conda install -n asr_coach -y -c conda-forge liblzma
+python -c "import lzma; print('lzma ok')"
 ```
 
 Tren mot so moi truong Windows co the gap loi OpenMP trung `libiomp5md.dll` khi import PyTorch/Transformers. App dat `KMP_DUPLICATE_LIB_OK=TRUE` trong process de phuc vu demo local; neu lam ban nop chinh thuc, nen cai PyTorch/NumPy/Librosa trong mot virtual environment moi.
