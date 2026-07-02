@@ -14,10 +14,10 @@ class ReportTest(unittest.TestCase):
         feedback = build_feedback(metrics)
         joined_feedback = "\n".join(feedback)
 
-        self.assertIn("Tong quan:", joined_feedback)
-        self.assertIn("Nhip noi:", joined_feedback)
+        self.assertIn("Tổng quan:", joined_feedback)
+        self.assertIn("Nhịp nói:", joined_feedback)
         self.assertIn("Filler words:", joined_feedback)
-        self.assertIn("Bai tap tiep theo:", joined_feedback)
+        self.assertIn("Bài tập tiếp theo:", joined_feedback)
 
     def test_feedback_mentions_top_filler_when_filler_rate_is_high(self):
         metrics = SpeechMetrics(
@@ -37,4 +37,3 @@ class ReportTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
