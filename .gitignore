@@ -10,7 +10,8 @@ __pycache__/
 *.ogg
 models/
 cache/
+phowhisper-vss-lora/
+phowhisper-small-vss-lora/
 training_outputs/
 runs/
 wandb/
-

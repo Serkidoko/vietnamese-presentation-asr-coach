@@ -1,6 +1,6 @@
 # Quick LoRA Fine-tune on VietSuperSpeech
 
-Muc tieu: fine-tune nhe `vinai/PhoWhisper-base` bang LoRA tren mot sample nho cua `thanhnew2001/VietSuperSpeech`.
+Muc tieu: fine-tune nhe PhoWhisper bang LoRA tren mot sample nho cua `thanhnew2001/VietSuperSpeech`.
 
 Huong nay dung de co mot phan training that trong bao cao mon ASR, nhung van du nhe de chay nhanh tren Google Colab GPU.
 
@@ -49,21 +49,44 @@ pip uninstall -y torchao
 
 Sau do chay lai cell fine-tune. Notebook da co san buoc nay trong cell cai dependencies.
 
-Lenh train mac dinh trong notebook:
+Lenh train `PhoWhisper-small` nen dung trong notebook:
 
 ```bash
 python training/finetune_lora_vietsuperspeech.py \
+  --model-id vinai/PhoWhisper-small \
+  --output-dir training_outputs/phowhisper-small-vss-lora \
   --train-samples 300 \
   --eval-samples 60 \
   --max-steps 100 \
-  --batch-size 2 \
-  --gradient-accumulation-steps 8
+  --batch-size 1 \
+  --gradient-accumulation-steps 32 \
+  --learning-rate 5e-5
 ```
 
 Output adapter:
 
 ```text
-training_outputs/phowhisper-vss-lora
+training_outputs/phowhisper-small-vss-lora
+```
+
+Luu vao Google Drive:
+
+```bash
+mkdir -p /content/drive/MyDrive/asr_coach
+cp -r training_outputs/phowhisper-small-vss-lora /content/drive/MyDrive/asr_coach/
+```
+
+Neu muon train lai ban base cu:
+
+```bash
+python training/finetune_lora_vietsuperspeech.py \
+  --model-id vinai/PhoWhisper-base \
+  --output-dir training_outputs/phowhisper-vss-lora \
+  --train-samples 300 \
+  --eval-samples 60 \
+  --max-steps 100 \
+  --batch-size 2 \
+  --gradient-accumulation-steps 40
 ```
 
 ## Tang/Giam Do Nang
@@ -77,12 +100,43 @@ Nhanh hon:
 Dep hon cho bao cao:
 
 ```bash
---train-samples 800 --eval-samples 120 --max-steps 200
+--train-samples 800 --eval-samples 120 --max-steps 150
+```
+
+Neu Colab bi OOM voi `PhoWhisper-small`, giu `--batch-size 1` va giam them:
+
+```bash
+--max-duration 12 --train-samples 200 --eval-samples 40
+```
+
+## Danh Gia Adapter Small
+
+Sau khi train xong, co the chay tren Colab:
+
+```bash
+python training/evaluate_vietsuperspeech_asr.py \
+  --model-id vinai/PhoWhisper-small \
+  --mode lora \
+  --adapter-dir training_outputs/phowhisper-small-vss-lora \
+  --samples 60
+```
+
+Khi tai folder ve may local, dat folder o root repo:
+
+```text
+phowhisper-small-vss-lora/
+```
+
+Luc do app se hien them option:
+
+```text
+PhoWhisper-small + LoRA fine-tuned
 ```
 
 ## Nen Bao Cao Gi
 
-- Model goc: `vinai/PhoWhisper-base`
+- Model goc/baseline: `vinai/PhoWhisper-base`
+- Model manh hon: `vinai/PhoWhisper-small`
 - Fine-tune method: LoRA
 - Dataset: sample nho tu VietSuperSpeech
 - Metric: WER tren validation sample

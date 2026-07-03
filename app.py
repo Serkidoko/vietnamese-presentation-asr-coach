@@ -3,7 +3,14 @@ import tempfile
 
 import streamlit as st
 
-from presentation_coach.asr import DEFAULT_MODEL_ID, transcribe_audio
+from presentation_coach.asr import (
+    DEFAULT_LORA_ADAPTER_DIR,
+    DEFAULT_MODEL_ID,
+    PHOWHISPER_SMALL_MODEL_ID,
+    PHOWHISPER_SMALL_LORA_ADAPTER_DIR,
+    has_local_lora_adapter,
+    transcribe_audio,
+)
 from presentation_coach.audio import get_audio_duration_seconds
 from presentation_coach.report import build_report
 
@@ -14,7 +21,31 @@ st.set_page_config(
 )
 
 st.title("Vietnamese Presentation ASR Coach")
-st.caption(f"ASR model: {DEFAULT_MODEL_ID}")
+
+model_options = {
+    "PhoWhisper-base": (DEFAULT_MODEL_ID, None),
+    "PhoWhisper-small": (PHOWHISPER_SMALL_MODEL_ID, None),
+}
+if has_local_lora_adapter():
+    model_options["PhoWhisper-base + LoRA fine-tuned"] = (
+        DEFAULT_MODEL_ID,
+        DEFAULT_LORA_ADAPTER_DIR,
+    )
+if has_local_lora_adapter(PHOWHISPER_SMALL_LORA_ADAPTER_DIR):
+    model_options["PhoWhisper-small + LoRA fine-tuned"] = (
+        PHOWHISPER_SMALL_MODEL_ID,
+        PHOWHISPER_SMALL_LORA_ADAPTER_DIR,
+    )
+if len(model_options) == 2:
+    st.info("Chua thay LoRA adapter local, app se chi dung model pretrained.")
+
+model_mode = st.radio(
+    "Che do model",
+    list(model_options.keys()),
+    horizontal=True,
+)
+selected_model_id, selected_adapter_dir = model_options[model_mode]
+st.caption(f"ASR model: {selected_model_id}")
 
 input_mode = st.radio(
     "Nguon audio",
@@ -82,9 +113,13 @@ if st.button("Phan tich", type="primary", disabled=selected_audio is None):
     temp_audio_path = save_audio_to_temp(selected_audio)
 
     try:
-        with st.spinner("Dang chay PhoWhisper-base..."):
+        with st.spinner(f"Dang chay {model_mode}..."):
             duration_seconds = get_audio_duration_seconds(temp_audio_path)
-            transcript = transcribe_audio(temp_audio_path)
+            transcript = transcribe_audio(
+                temp_audio_path,
+                model_id=selected_model_id,
+                adapter_dir=selected_adapter_dir,
+            )
             report = build_report(
                 transcript=transcript,
                 duration_seconds=duration_seconds,
