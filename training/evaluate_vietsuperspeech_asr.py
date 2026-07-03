@@ -17,6 +17,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from presentation_coach.asr import (
     DEFAULT_LORA_ADAPTER_DIR,
     DEFAULT_MODEL_ID,
+    PHOWHISPER_SMALL_MODEL_ID,
     has_local_lora_adapter,
     load_asr_pipeline,
     transcribe_audio,
@@ -120,7 +121,9 @@ def metric_summary(rows: list[dict[str, Any]]) -> dict[str, float]:
 
 
 def model_label(model_id: str, adapter_dir: str | None = None) -> str:
-    label = model_id.rsplit("/", maxsplit=1)[-1].lower()
+    label = "phowhisper-final"
+    if model_id != PHOWHISPER_SMALL_MODEL_ID:
+        label = model_id.rsplit("/", maxsplit=1)[-1].lower()
     if adapter_dir:
         return f"{label}-lora"
     return label

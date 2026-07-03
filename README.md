@@ -1,11 +1,11 @@
 # Vietnamese Presentation ASR Coach
 
-He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu dong, su dung `vinai/PhoWhisper-base`.
+He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu dong, su dung PhoWhisper. App co lua chon `PhoWhisper-base` va `PhoWhisper-final` (`vinai/PhoWhisper-small`).
 
 ## Scope
 
 - Record truc tiep hoac upload audio bai thuyet trinh.
-- Chuyen speech to text bang PhoWhisper-base.
+- Chuyen speech to text bang PhoWhisper.
 - Hien thi transcript.
 - Tinh thoi luong, so tu, WPM va filler words tieng Viet.
 - Tinh WER/CER neu co transcript chuan.
@@ -18,19 +18,35 @@ He thong ho tro luyen thuyet trinh tieng Viet dua tren nhan dang tieng noi tu do
 - Hugging Face Transformers
 - PyTorch
 - Librosa/SoundFile
+- FFmpeg
 
 ## Cai dat
+
+### Windows + NVIDIA GPU
 
 ```powershell
 conda create -y -n asr_coach python=3.11 pip
 conda activate asr_coach
-conda install -y -c conda-forge liblzma
+conda install -y -c conda-forge ffmpeg liblzma
 python -m pip install --upgrade pip
 python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 ```
 
-Lenh tren tao conda env `asr_coach` va cai PyTorch CUDA wheel rieng cho NVIDIA GPU. Khong can cai CUDA Toolkit he thong de chay demo nay, mien la `nvidia-smi` nhan GPU va driver du moi.
+Lenh tren tao conda env `asr_coach`, cai FFmpeg de doc/chuan hoa audio, va cai PyTorch CUDA wheel rieng cho NVIDIA GPU. Khong can cai CUDA Toolkit he thong de chay demo nay, mien la `nvidia-smi` nhan GPU va driver du moi.
+
+### Windows + AMD GPU hoac CPU
+
+Voi card AMD khong ho tro ROCm/PyTorch tren Windows, dung ban CPU:
+
+```powershell
+conda create -y -n asr_coach python=3.11 pip
+conda activate asr_coach
+conda install -y -c conda-forge ffmpeg liblzma
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install -r requirements.txt
+```
 
 Kiem tra GPU:
 
@@ -51,7 +67,7 @@ conda deactivate
 conda env remove -n asr_coach
 conda create -y -n asr_coach python=3.11 pip
 conda activate asr_coach
-conda install -y -c conda-forge liblzma
+conda install -y -c conda-forge ffmpeg liblzma
 python -m pip install --upgrade pip
 python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
@@ -60,7 +76,7 @@ pip install -r requirements.txt
 Neu muon sua env hien tai truoc khi cai lai dependencies:
 
 ```powershell
-conda install -n asr_coach -y -c conda-forge liblzma
+conda install -n asr_coach -y -c conda-forge ffmpeg liblzma
 python -c "import lzma; print('lzma ok')"
 ```
 
@@ -72,7 +88,7 @@ Tren mot so moi truong Windows co the gap loi OpenMP trung `libiomp5md.dll` khi 
 streamlit run app.py
 ```
 
-Lan dau chay, model `vinai/PhoWhisper-base` se duoc tai ve tu Hugging Face va cache tren may.
+Lan dau chay, model duoc chon se duoc tai ve tu Hugging Face va cache tren may.
 
 App ho tro 2 nguon audio:
 

@@ -11,7 +11,7 @@ from presentation_coach.asr import (
     has_local_lora_adapter,
     transcribe_audio,
 )
-from presentation_coach.audio import get_audio_duration_seconds
+from presentation_coach.audio import convert_audio_to_wav, get_audio_duration_seconds
 from presentation_coach.report import build_report
 
 
@@ -24,7 +24,7 @@ st.title("Vietnamese Presentation ASR Coach")
 
 model_options = {
     "PhoWhisper-base": (DEFAULT_MODEL_ID, None),
-    "PhoWhisper-small": (PHOWHISPER_SMALL_MODEL_ID, None),
+    "PhoWhisper-final": (PHOWHISPER_SMALL_MODEL_ID, None),
 }
 if has_local_lora_adapter():
     model_options["PhoWhisper-base + LoRA fine-tuned"] = (
@@ -32,7 +32,7 @@ if has_local_lora_adapter():
         DEFAULT_LORA_ADAPTER_DIR,
     )
 if has_local_lora_adapter(PHOWHISPER_SMALL_LORA_ADAPTER_DIR):
-    model_options["PhoWhisper-small + LoRA fine-tuned"] = (
+    model_options["PhoWhisper-final + LoRA fine-tuned"] = (
         PHOWHISPER_SMALL_MODEL_ID,
         PHOWHISPER_SMALL_LORA_ADAPTER_DIR,
     )
@@ -45,7 +45,7 @@ model_mode = st.radio(
     horizontal=True,
 )
 selected_model_id, selected_adapter_dir = model_options[model_mode]
-st.caption(f"ASR model: {selected_model_id}")
+st.caption(f"ASR model: {model_mode}")
 
 input_mode = st.radio(
     "Nguon audio",
@@ -111,12 +111,14 @@ def render_report(transcript: str, report: dict[str, object]) -> None:
 
 if st.button("Phan tich", type="primary", disabled=selected_audio is None):
     temp_audio_path = save_audio_to_temp(selected_audio)
+    wav_audio_path = None
 
     try:
         with st.spinner(f"Dang chay {model_mode}..."):
-            duration_seconds = get_audio_duration_seconds(temp_audio_path)
+            wav_audio_path = convert_audio_to_wav(temp_audio_path)
+            duration_seconds = get_audio_duration_seconds(wav_audio_path)
             transcript = transcribe_audio(
-                temp_audio_path,
+                wav_audio_path,
                 model_id=selected_model_id,
                 adapter_dir=selected_adapter_dir,
             )
@@ -129,3 +131,5 @@ if st.button("Phan tich", type="primary", disabled=selected_audio is None):
         render_report(transcript, report)
     finally:
         temp_audio_path.unlink(missing_ok=True)
+        if wav_audio_path:
+            wav_audio_path.unlink(missing_ok=True)

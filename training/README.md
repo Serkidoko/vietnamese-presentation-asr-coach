@@ -49,7 +49,7 @@ pip uninstall -y torchao
 
 Sau do chay lai cell fine-tune. Notebook da co san buoc nay trong cell cai dependencies.
 
-Lenh train `PhoWhisper-small` nen dung trong notebook:
+Lenh train `PhoWhisper-final` nen dung trong notebook:
 
 ```bash
 python training/finetune_lora_vietsuperspeech.py \
@@ -103,7 +103,7 @@ Dep hon cho bao cao:
 --train-samples 800 --eval-samples 120 --max-steps 150
 ```
 
-Neu Colab bi OOM voi `PhoWhisper-small`, giu `--batch-size 1` va giam them:
+Neu Colab bi OOM voi `PhoWhisper-final`, giu `--batch-size 1` va giam them:
 
 ```bash
 --max-duration 12 --train-samples 200 --eval-samples 40
@@ -130,13 +130,13 @@ phowhisper-small-vss-lora/
 Luc do app se hien them option:
 
 ```text
-PhoWhisper-small + LoRA fine-tuned
+PhoWhisper-final + LoRA fine-tuned
 ```
 
 ## Nen Bao Cao Gi
 
 - Model goc/baseline: `vinai/PhoWhisper-base`
-- Model manh hon: `vinai/PhoWhisper-small`
+- Model manh hon: `PhoWhisper-final` (`vinai/PhoWhisper-small`)
 - Fine-tune method: LoRA
 - Dataset: sample nho tu VietSuperSpeech
 - Metric: WER tren validation sample
