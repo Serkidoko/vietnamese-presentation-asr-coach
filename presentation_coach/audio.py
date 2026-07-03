@@ -13,6 +13,47 @@ FFMPEG_MISSING_HINT = (
 )
 
 
+def can_read_audio_info(audio_path: str | Path) -> bool:
+    try:
+        import soundfile as sf
+
+        info = sf.info(str(audio_path))
+        return info.frames > 0 and info.samplerate > 0
+    except Exception:
+        return False
+
+
+def load_audio_array(
+    audio_path: str | Path,
+    target_sample_rate: int = 16000,
+):
+    path = str(audio_path)
+
+    try:
+        import soundfile as sf
+
+        audio, sample_rate = sf.read(path, dtype="float32", always_2d=False)
+    except Exception:
+        import librosa
+
+        audio, sample_rate = librosa.load(path, sr=None, mono=True)
+
+    if getattr(audio, "ndim", 1) > 1:
+        audio = audio.mean(axis=1)
+
+    if sample_rate != target_sample_rate:
+        import librosa
+
+        audio = librosa.resample(
+            audio,
+            orig_sr=sample_rate,
+            target_sr=target_sample_rate,
+        )
+        sample_rate = target_sample_rate
+
+    return audio, sample_rate
+
+
 def convert_audio_to_wav(
     audio_path: str | Path,
     sample_rate: int = 16000,
@@ -22,6 +63,10 @@ def convert_audio_to_wav(
         raise RuntimeError(f"Audio input does not exist: {source_path}")
     if source_path.stat().st_size == 0:
         raise RuntimeError("Audio input is empty. Record or upload the audio again.")
+    if source_path.suffix.lower() in {".wav", ".wave"} and can_read_audio_info(
+        source_path
+    ):
+        return source_path
 
     fd, output_name = tempfile.mkstemp(suffix=".wav")
     os.close(fd)

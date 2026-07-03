@@ -4,6 +4,8 @@ from functools import lru_cache
 import os
 from pathlib import Path
 
+from presentation_coach.audio import load_audio_array
+
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 
@@ -103,14 +105,16 @@ def transcribe_audio(
         adapter_dir=str(adapter_dir) if adapter_dir else None,
     )
     path = str(audio_path)
+    audio_array, sample_rate = load_audio_array(path)
+    pipeline_input = {"array": audio_array, "sampling_rate": sample_rate}
 
     try:
         result = asr_pipeline(
-            path,
+            pipeline_input,
             generate_kwargs={"language": "vi", "task": "transcribe"},
         )
     except (TypeError, ValueError):
-        result = asr_pipeline(path)
+        result = asr_pipeline(pipeline_input)
 
     if isinstance(result, dict):
         return result.get("text", "").strip()
